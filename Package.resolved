@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Fichier",
+        "repositoryURL": "https://github.com/TommiKivimaki/Fichier.git",
+        "state": {
+          "branch": null,
+          "revision": "d31558ff16d6aed415864c237574ce554b3eab33",
+          "version": "0.3.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
