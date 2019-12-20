@@ -80,7 +80,7 @@ public final class SitemapGen {
   /// Prints out usage instructions
   private func usage() {
     print("""
-          SitemapGen v0.3.0 generates `sitemap.txt` for a website.
+          SitemapGen v0.3.1 generates `sitemap.txt` for a website.
 
           USAGE: sitemapgen <hostname> <target>
 
