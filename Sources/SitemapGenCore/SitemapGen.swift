@@ -25,8 +25,8 @@ public final class SitemapGen {
       return
     }
     
-    let path = commandlineArguments[1]
-    let hostname = commandlineArguments[2]
+    let hostname = commandlineArguments[1]
+    let path = commandlineArguments[2]
     let urls = getHTMLFiles(path)
     let sitemap = makeMap(hostname, using: urls, originPath: path)
    
@@ -38,6 +38,7 @@ public final class SitemapGen {
     do {
       _ = try files.write(content: sitemap, to: sitemapURL)
       print(sitemap)
+      print("sitemap.txt written to `\(path)`")
     } catch {
       print("Failed to write sitemap")
     }
