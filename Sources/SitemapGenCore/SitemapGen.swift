@@ -20,14 +20,15 @@ public final class SitemapGen {
   
   /// Runs the sitemap generation
   public func start() {
-    guard commandlineArguments.count == 2 else {
+    guard commandlineArguments.count == 3 else {
       usage()
       return
     }
     
-    let hostname = commandlineArguments[1]
-    let urls = getHTMLFiles()
-    let sitemap = makeMap(hostname, using: urls)
+    let path = commandlineArguments[1]
+    let hostname = commandlineArguments[2]
+    let urls = getHTMLFiles(path)
+    let sitemap = makeMap(hostname, using: urls, originPath: path)
    
     let sitemapURL = files.getCurrentDirectory()
       .appendingPathComponent("sitemap")
@@ -43,10 +44,10 @@ public final class SitemapGen {
   
   
   /// Gets all the HTML files from the current directory
-  func getHTMLFiles() -> [URL] {
-    let currentDirectory = files.getCurrentDirectory()
+  func getHTMLFiles(_ fromPath: String) -> [URL] {
+    let path = files.getCurrentDirectory().appendingPathComponent(fromPath)
     do {
-      let urls = try files.getAllFiles(from: [currentDirectory])
+      let urls = try files.getAllFiles(from: [path])
       return urls.filter { $0.pathExtension == "html" }
     } catch {
       print("Failed to get all files")
@@ -55,16 +56,17 @@ public final class SitemapGen {
     return []
   }
   
+  
   /// Creates a sitemap by replacing the local filepaths with a hostname and a scheme
   /// - Parameters:
   ///   - hostname: Hostname for the site
   ///   - urls: urls to be included in the sitemap
-  func makeMap(_ hostname: String, using urls: [URL]) -> String {
+  func makeMap(_ hostname: String, using urls: [URL], originPath: String) -> String {
     var map = ""
-    let currentDirectory = files.getCurrentDirectory()
+    let fromURL = files.getCurrentDirectory().appendingPathComponent(originPath)
     let basePath = "https://".appending(hostname)
     urls.forEach {
-      let serverPath = $0.path.replacingOccurrences(of: currentDirectory.path, with: basePath)
+      let serverPath = $0.path.replacingOccurrences(of: fromURL.path, with: basePath)
       map.append(serverPath)
       map.append("\n")
     }
@@ -72,10 +74,16 @@ public final class SitemapGen {
     return String(map.dropLast())
   }
   
+  
   /// Prints out usage instructions
   private func usage() {
     print("""
-          SitemapGen v0.1.0 generates sitemap.txt for a website.
+          SitemapGen v0.2.0 generates `sitemap.txt` for a website.
+
+          USAGE: sitemapgen <hostname> <target>
+
+          <hostname>      Hostname of the site
+          <target>        Generates sitemap for this folder
           """)
   }
 }

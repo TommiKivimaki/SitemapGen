@@ -40,14 +40,7 @@ final class SitemapGenTests: XCTestCase {
   }
   
   func testWithoutInputParameters() throws {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct
-    // results.
-    
-    // Some of the APIs that we use below are available in macOS 10.13 and above.
-    guard #available(macOS 10.13, *) else {
-      return
-    }
+    guard #available(macOS 10.13, *) else { return }
     
     let binary = productsDirectory.appendingPathComponent("SitemapGen")
     
@@ -63,7 +56,15 @@ final class SitemapGenTests: XCTestCase {
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     let output = String(data: data, encoding: .utf8)
     
-    XCTAssertEqual(output, "SitemapGen v0.1.0 generates sitemap.txt for a website.\n")
+    XCTAssertEqual(output, """
+      SitemapGen v0.2.0 generates `sitemap.txt` for a website.
+
+      USAGE: sitemapgen <hostname> <target>
+
+      <hostname>      Hostname of the site
+      <target>        Generates sitemap for this folder
+      
+      """)
   }
   
   
@@ -83,7 +84,7 @@ final class SitemapGenTests: XCTestCase {
     
     let process = Process()
     process.executableURL = binary
-    process.arguments = ["foo.bar"]
+    process.arguments = ["testDirectory", "foo.bar"]
     
     let pipe = Pipe()
     process.standardOutput = pipe
@@ -95,10 +96,10 @@ final class SitemapGenTests: XCTestCase {
     let output = String(data: data, encoding: .utf8)!
     
     let expectedResult = """
-                         https://foo.bar/testDirectory/html3.html
-                         https://foo.bar/testDirectory/html2.html
-                         https://foo.bar/testDirectory/html1.html
-                         https://foo.bar/testDirectory/testSubDirectory/htmlSub.html
+                         https://foo.bar/html3.html
+                         https://foo.bar/html2.html
+                         https://foo.bar/html1.html
+                         https://foo.bar/testSubDirectory/htmlSub.html
 
                          """
     XCTAssertEqual(output, expectedResult)
