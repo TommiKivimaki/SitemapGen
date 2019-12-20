@@ -57,7 +57,7 @@ final class SitemapGenTests: XCTestCase {
     let output = String(data: data, encoding: .utf8)
     
     XCTAssertEqual(output, """
-      SitemapGen v0.2.0 generates `sitemap.txt` for a website.
+      SitemapGen v0.3.0 generates `sitemap.txt` for a website.
 
       USAGE: sitemapgen <hostname> <target>
 

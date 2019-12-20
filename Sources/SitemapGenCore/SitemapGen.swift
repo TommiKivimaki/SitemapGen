@@ -31,6 +31,7 @@ public final class SitemapGen {
     let sitemap = makeMap(hostname, using: urls, originPath: path)
    
     let sitemapURL = files.getCurrentDirectory()
+      .appendingPathComponent(path)
       .appendingPathComponent("sitemap")
       .appendingPathExtension("txt")
     
@@ -78,7 +79,7 @@ public final class SitemapGen {
   /// Prints out usage instructions
   private func usage() {
     print("""
-          SitemapGen v0.2.0 generates `sitemap.txt` for a website.
+          SitemapGen v0.3.0 generates `sitemap.txt` for a website.
 
           USAGE: sitemapgen <hostname> <target>
 
