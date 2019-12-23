@@ -57,7 +57,7 @@ final class SitemapGenTests: XCTestCase {
     let output = String(data: data, encoding: .utf8)
     
     XCTAssertEqual(output, """
-      SitemapGen v0.3.0 generates `sitemap.txt` for a website.
+      SitemapGen v0.3.1 generates `sitemap.txt` for a website.
 
       USAGE: sitemapgen <hostname> <target>
 
@@ -84,7 +84,7 @@ final class SitemapGenTests: XCTestCase {
     
     let process = Process()
     process.executableURL = binary
-    process.arguments = ["testDirectory", "foo.bar"]
+    process.arguments = ["foo.bar", "testDirectory"]
     
     let pipe = Pipe()
     process.standardOutput = pipe
@@ -96,13 +96,51 @@ final class SitemapGenTests: XCTestCase {
     let output = String(data: data, encoding: .utf8)!
     
     let expectedResult = """
-                         https://foo.bar/html3.html
-                         https://foo.bar/html2.html
-                         https://foo.bar/html1.html
-                         https://foo.bar/testSubDirectory/htmlSub.html
-
-                         """
+          https://foo.bar/html3.html
+          https://foo.bar/html2.html
+          https://foo.bar/html1.html
+          https://foo.bar/testSubDirectory/htmlSub.html
+          sitemap.txt written to `testDirectory`\n
+          """
     XCTAssertEqual(output, expectedResult)
+  }
+  
+  
+  func testSitemapContent() {
+    guard #available(macOS 10.13, *) else {
+      return
+    }
+    
+    let binary = productsDirectory.appendingPathComponent("SitemapGen")
+    
+    let process = Process()
+    process.executableURL = binary
+    process.arguments = ["foo.bar", "testDirectory"]
+    
+    let pipe = Pipe()
+    process.standardOutput = pipe
+    
+    try! process.run()
+    process.waitUntilExit()
+    
+    let data = pipe.fileHandleForReading.readDataToEndOfFile()
+    let _ = String(data: data, encoding: .utf8)!
+
+    // Read the generated sitemap
+    let sitemapURL = productsDirectory
+      .appendingPathComponent("testDirectory")
+      .appendingPathComponent("sitemap")
+      .appendingPathExtension("txt")
+    let sitemapContent = try! String(contentsOf: sitemapURL, encoding: .utf8)
+
+    let expectedSitemapContent =  """
+             https://foo.bar/html3.html
+             https://foo.bar/html2.html
+             https://foo.bar/html1.html
+             https://foo.bar/testSubDirectory/htmlSub.html
+             """
+    
+    XCTAssertEqual(sitemapContent, expectedSitemapContent)
   }
   
   
@@ -122,6 +160,7 @@ final class SitemapGenTests: XCTestCase {
   static var allTests = [
     ("testExample", testWithoutInputParameters),
     ("testTestDirectoryExists", testTestDirectoryExists),
-    ("testCreateSitemap", testCreateSitemap)
+    ("testCreateSitemap", testCreateSitemap),
+    ("testSitemapContent", testSitemapContent)
   ]
 }

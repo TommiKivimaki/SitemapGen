@@ -19,7 +19,7 @@ public final class SitemapGen {
   
   
   /// Runs the sitemap generation
-  public func start() {
+  public func start() throws {
     guard commandlineArguments.count == 3 else {
       usage()
       return
@@ -27,7 +27,7 @@ public final class SitemapGen {
     
     let hostname = commandlineArguments[1]
     let path = commandlineArguments[2]
-    let urls = getHTMLFiles(path)
+    let urls = try getHTMLFiles(path)
     let sitemap = makeMap(hostname, using: urls, originPath: path)
    
     let sitemapURL = files.getCurrentDirectory()
@@ -46,13 +46,13 @@ public final class SitemapGen {
   
   
   /// Gets all the HTML files from the current directory
-  func getHTMLFiles(_ fromPath: String) -> [URL] {
+  func getHTMLFiles(_ fromPath: String) throws -> [URL] {
     let path = files.getCurrentDirectory().appendingPathComponent(fromPath)
     do {
       let urls = try files.getAllFiles(from: [path])
       return urls.filter { $0.pathExtension == "html" }
     } catch {
-      print("Failed to get all files")
+      throw SitemapGenError.failedToGetHTMLFiles
     }
     
     return []
@@ -80,7 +80,7 @@ public final class SitemapGen {
   /// Prints out usage instructions
   private func usage() {
     print("""
-          SitemapGen v0.3.1 generates `sitemap.txt` for a website.
+          SitemapGen v0.4.0 generates `sitemap.txt` for a website.
 
           USAGE: sitemapgen <hostname> <target>
 
