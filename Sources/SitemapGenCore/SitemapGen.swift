@@ -54,8 +54,7 @@ public final class SitemapGen {
     } catch {
       throw SitemapGenError.failedToGetHTMLFiles
     }
-    
-    return []
+
   }
   
   
